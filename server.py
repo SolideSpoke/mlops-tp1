@@ -7,10 +7,10 @@ model = joblib.load("regression.joblib")
 
 class House(BaseModel):
     size: float
-    bedrooms: int
+    nb_rooms: int
     garden: bool
 
 @app.post("/predict")
 def predict(house: House):
-    prediction = model.predict([[house.size, house.bedrooms, house.garden]])
+    prediction = model.predict([[house.size, house.nb_rooms, house.garden]])
     return {"y_pred": prediction[0]}
