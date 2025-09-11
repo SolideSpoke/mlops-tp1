@@ -1,0 +1,17 @@
+name: GitHub Actions Demo
+run-name: ${{ github.actor }} is testing
+on: [push]
+jobs:
+  tests :
+    runs-on: ubuntu-latest
+    name: Run tests
+    steps:
+        - uses: actions/checkout@v3
+        - name: "Build docker image"
+          run: docker build -t server:latest .
+        - name : "Run docker container"
+          run: docker run -d -p 8088:8000 --name server server:latest
+        - name: "Test the server"
+          run : python test_server.py
+        - name: "Stop and remove the container"
+          run : docker rm -f server
