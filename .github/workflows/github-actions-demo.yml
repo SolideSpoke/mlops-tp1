@@ -10,7 +10,7 @@ jobs:
         - name: "Build docker image"
           run: docker build -t server:latest .
         - name : "Run docker container"
-          run: docker run -d -p 8088:8000 --name server server:latest
+          run: docker run -d -p 8088:8000 --name server server:latest --wait --wait-timeout 30
         - name: "Test the server"
           run : python test_server.py
         - name: "Stop and remove the container"
