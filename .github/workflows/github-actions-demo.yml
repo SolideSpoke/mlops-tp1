@@ -10,7 +10,17 @@ jobs:
         - name: "Build docker image"
           run: docker build -t server:latest .
         - name : "Run docker container"
-          run: docker run -d -p 8088:8000 --name server server:latest --wait --wait-timeout 30
+          run: docker run -d -p 8088:8000 --name server server:latest
+        - name: "Wait for server"
+          run: |
+            for i in {1..10}; do
+              if nc -z localhost 8088; then
+                echo "Server is up!"
+                break
+              fi
+              echo "Waiting for server..."
+              sleep 1
+            done
         - name: "Test the server"
           run : python test_server.py
         - name: "Stop and remove the container"
