@@ -1,0 +1,45 @@
+name: GitHub Actions Demo
+run-name: ${{ github.actor }} is testing
+on: [push]
+jobs:
+  tests :
+    runs-on: ubuntu-latest
+    name: Run tests
+    steps:
+        - name: "Checkout code"
+          uses: actions/checkout@v3
+        - name: "Build docker image"
+          run: docker build -t server:latest .
+        - name : "Run docker container"
+          run: docker run -d -p 8002:8000 --name server server:latest
+        - name: "Wait for server"
+          run: |
+            for i in {1..60}; do
+              if curl -s http://localhost:8002/hello; then
+                echo "Server is up"
+                break
+              fi
+              echo "Waiting for server..."
+              sleep 1
+            done
+        - name: "Test the server"
+          run : python test_server.py
+        - name: "Stop and remove the container"
+          run : docker rm -f server
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          key: ${{ secrets.SSH_PASSWORD }}
+          script: |
+            cd ~/ao
+            git pull origin main
+            docker build -t ao:latest .
+            docker stop ao || true
+            docker rm ao || true
+            docker run -d -p 8002:8000 --name ao ao:latest
