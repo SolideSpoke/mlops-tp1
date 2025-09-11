@@ -10,6 +10,10 @@ class House(BaseModel):
     nb_rooms: int
     garden: bool
 
+@app.get("/hello")
+def hello():
+    return {"message": "Hello World"}
+
 @app.post("/predict")
 def predict(house: House):
     prediction = model.predict([[house.size, house.nb_rooms, house.garden]])
