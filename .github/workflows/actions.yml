@@ -50,6 +50,7 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
+            mkdir -p ~/ao
             cd ~/ao
             docker pull ${{ secrets.DOCKER_USERNAME }}/ao:latest
             docker stop ao || true
